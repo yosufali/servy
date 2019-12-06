@@ -17,12 +17,18 @@ defmodule Servy.Plugins do
 
   @doc "Logs requests"
   def log(%Conv{} = conv) do
-    Logger.info("Logging request: #{inspect(conv)}")
+    if Mix.env() == :dev do
+      Logger.info("Logging request: #{inspect(conv)}")
+    end
+
     conv
   end
 
   def track(%Conv{status: 404, path: path} = conv) do
-    IO.puts("Warning: #{path} is on the loose!")
+    if Mix.env() != :test do
+      IO.puts("Warning: #{path} is on the loose!")
+    end
+
     conv
   end
 
