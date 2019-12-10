@@ -27,7 +27,7 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     t = Time.utc_now()
 
-    task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
+    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
 
     IO.inspect(task)
 
