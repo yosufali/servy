@@ -35,19 +35,10 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     t = Time.utc_now()
 
-    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
-
-    IO.inspect(task)
-
-    snapshots =
-      ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Task.async(fn -> Servy.VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Task.await/1)
-
-    where_is_bigfoot = Task.await(task)
+    sensor_data = Servy.SensorServer.get_sensor_data()
 
     IO.puts("Time taken: " <> inspect(Time.diff(Time.utc_now(), t)))
-    %{conv | status: 200, resp_body: inspect({snapshots, where_is_bigfoot})}
+    %{conv | status: 200, resp_body: inspect(sensor_data)}
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"} = conv) do
