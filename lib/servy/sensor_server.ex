@@ -1,13 +1,15 @@
 defmodule Servy.SensorServer do
   @name :sensor_server
-  @refresh_interval :timer.seconds(5)
+  # :timer.seconds(5)
+  @refresh_interval :timer.minutes(60)
 
   use GenServer
 
   # Client Interface
 
-  def start do
-    GenServer.start(__MODULE__, %{}, name: @name)
+  def start_link(interval) do
+    IO.puts("Starting the SensorServer with #{interval} min refresh...")
+    GenServer.start_link(__MODULE__, %{}, name: @name)
   end
 
   def get_sensor_data do
@@ -29,7 +31,7 @@ defmodule Servy.SensorServer do
   def handle_info(:refresh, _state) do
     IO.puts("Refreshing the cache...")
     new_state = run_tasks_to_get_sensor_data()
-    schedule_refresh
+    schedule_refresh()
     {:noreply, new_state}
   end
 
